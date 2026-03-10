@@ -8,7 +8,6 @@
         const GENDER = 'boy'; 
         const PHOTO_NAME = 'us.jpg'; 
         const PASS_CODE = 'baby'; 
-        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfOCksWrckDJk0_7x3QHFA-9kEtJvxXz90AR1rRVamCcTgWxw/viewform?embedded=true';
         // ==========================================
     </script>
 
@@ -27,13 +26,13 @@
 
         .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
 
-        /* PASSWORD GUI STYLES */
+        /* PASSWORD SCREEN */
         #password-screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 80vh; width: 100%;
         }
         .password-card {
-            background: white; padding: 40px 30px; border-radius: 30px;
+            background: white; padding: 40px 30px; border-radius: 35px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 90%; max-width: 350px;
         }
         .password-card h2 { color: #5a4fcf; margin-bottom: 20px; font-size: 1.4rem; }
@@ -46,10 +45,9 @@
             border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 1rem;
             transition: transform 0.2s, background 0.2s; width: 100%;
         }
-        .password-card button:hover { background: #4a3ebf; transform: scale(1.02); }
         #error-msg { color: #e91e63; font-size: 0.9rem; margin-top: 10px; display: none; }
 
-        /* THE GAME CONTENT (Hidden until password is correct) */
+        /* CONTENT WRAPPER */
         #game-content { display: none; width: 100%; }
 
         #parents-photo { margin-top: 50px; margin-bottom: 20px; }
@@ -57,8 +55,10 @@
         .couple-label { margin-top: 10px; font-weight: 700; color: #7d7098; letter-spacing: 1px; font-size: 0.85rem; text-transform: uppercase; }
         h1 { color: #5a4fcf; margin: 20px 0; font-size: 1.6rem; }
         
-        .reveal-card { width: 280px; height: 350px; background: white; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 4px dashed #cbc3e3; -webkit-tap-highlight-color: transparent; margin: 0 auto; }
+        .reveal-card { width: 280px; height: 350px; background: white; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 4px dashed #cbc3e3; -webkit-tap-highlight-color: transparent; margin: 0 auto; transition: transform 0.2s; }
+        .reveal-card:active { transform: scale(0.95); }
         
+        /* THE INTENSE SHAKE */
         .shake { animation: hard-shake 1.5s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes hard-shake {
             10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-1deg); }
@@ -69,22 +69,64 @@
             95% { transform: translate3d(-14px, 0, 0) rotate(-5deg); }
         }
 
+        /* FANCY RESULT BADGE */
         #reveal-section { display: none; width: 100%; }
-        .result-badge { background: white; border: 6px solid #abd6e2; border-radius: 40px; padding: 60px 100px; display: inline-block; margin: 60px 0 120px 0; box-shadow: 0 12px 0px #abd6e2; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 90%; }
-        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .gender-result { font-size: 3rem; font-weight: 900; color: #3498db; margin: 0; text-shadow: 1px 1px 0px #fff; white-space: nowrap; }
-
-        .invite-box { background: white; padding: 45px 20px; border-radius: 28px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); margin-bottom: 50px; width: 100%; box-sizing: border-box; }
-        .invite-box h2 { font-size: 1.8rem; margin-bottom: 10px; color: #333; line-height: 1.3; }
-        .event-details { font-size: 1.1rem; color: #666; margin-bottom: 25px; font-weight: 500; }
-        .rsvp-iframe { width: 100%; height: 950px; border: none; border-radius: 15px; margin-top: 35px; background-color: #fff; }
         
+        .result-badge {
+            background: white;
+            position: relative;
+            border: 8px solid #abd6e2; 
+            border-radius: 50px; 
+            padding: 70px 110px; 
+            display: inline-block;
+            margin-top: 100px;
+            box-shadow: 0 20px 0px #abd6e2, 0 30px 50px rgba(0,0,0,0.1);
+            /* Combined Animations: Pop in, then start floating */
+            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
+                       floating 3s ease-in-out infinite 0.8s;
+            max-width: 85%;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .gender-result { 
+            font-size: 3.5rem; 
+            font-weight: 900; 
+            color: #3498db; 
+            margin: 0;
+            text-shadow: 2px 2px 0px #fff;
+            white-space: nowrap; 
+        }
+
+        /* Sparkle decorations around the box */
+        .result-badge::before, .result-badge::after {
+            content: "✨";
+            position: absolute;
+            font-size: 2rem;
+            animation: twinkle 1.5s infinite alternate;
+        }
+        .result-badge::before { top: -20px; left: -20px; }
+        .result-badge::after { bottom: -20px; right: -20px; }
+
+        @keyframes twinkle {
+            from { opacity: 0.3; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1.2); }
+        }
+
         .bg-boy { background-color: #eef7ff !important; }
 
         @media (max-width: 600px) {
-            .result-badge { padding: 40px 20px; width: 95%; }
-            .gender-result { font-size: 1.9rem; }
-            .invite-box h2 { font-size: 1.5rem; }
+            .result-badge { padding: 50px 30px; width: 90%; }
+            .gender-result { font-size: 2.2rem; }
         }
     </style>
 </head>
@@ -94,8 +136,8 @@
     <div id="password-screen">
         <div class="password-card">
             <h2>Welcome! 🐣</h2>
-            <input type="text" id="passInput" placeholder="Enter the secret code..." autocomplete="off">
-            <button onclick="checkPass()">Go!</button>
+            <input type="text" id="passInput" placeholder="Enter secret code..." autocomplete="off">
+            <button onclick="checkPass()">Unlock Reveal</button>
             <div id="error-msg">Incorrect code. Try again!</div>
         </div>
     </div>
@@ -117,26 +159,18 @@
             </div>
 
             <div id="reveal-section">
+                <!-- THE NEW FANCY FLOATING BOX -->
                 <div class="result-badge">
                     <h2 class="gender-result">It's a BOY! 💙</h2>
-                </div>
-                
-                <div class="invite-box">
-                    <h2>You're invited to our Baby Shower!</h2>
-                    <div class="event-details">Date: TBD | Location: TBD</div>
-                    <hr style="border:0; border-top: 1px solid #eee; margin: 30px 0;">
-                    <iframe id="rsvp-form" src="" class="rsvp-iframe">Loading…</iframe>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Setup content
+        // Setup initial data
         document.getElementById('main-photo').src = 'images/' + PHOTO_NAME;
-        document.getElementById('rsvp-form').src = GOOGLE_FORM_URL;
 
-        // Custom GUI Password Check
         function checkPass() {
             const input = document.getElementById('passInput').value.toLowerCase();
             const error = document.getElementById('error-msg');
@@ -150,11 +184,8 @@
             }
         }
 
-        // Allow pressing "Enter" key for password
         document.getElementById('passInput').addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
-                checkPass();
-            }
+            if (event.key === "Enter") checkPass();
         });
 
         function triggerReveal() {
@@ -174,17 +205,17 @@
         }
 
         function runConfetti(color1, color2) {
-            confetti({ particleCount: 160, spread: 75, origin: { x: 0, y: 0.8 }, colors: [color1, color2] });
-            confetti({ particleCount: 160, spread: 75, origin: { x: 1, y: 0.8 }, colors: [color1, color2] });
+            confetti({ particleCount: 180, spread: 80, origin: { x: 0, y: 0.8 }, colors: [color1, color2] });
+            confetti({ particleCount: 180, spread: 80, origin: { x: 1, y: 0.8 }, colors: [color1, color2] });
             let count = 0;
             const fireworkInterval = setInterval(() => {
                 confetti({
-                    particleCount: 65, startVelocity: 40, spread: 360,
+                    particleCount: 70, startVelocity: 45, spread: 360,
                     origin: { x: Math.random(), y: Math.random() - 0.2 },
                     colors: [color1, color2, '#ffffff'], shapes: ['circle', 'star']
                 });
                 count++;
-                if (count > 15) clearInterval(fireworkInterval);
+                if (count > 18) clearInterval(fireworkInterval);
             }, 200);
         }
     </script>
