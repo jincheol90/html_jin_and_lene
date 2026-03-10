@@ -3,29 +3,13 @@
 <head>
     <script>
         // ==========================================
-        //  USER SETTINGS
+        // 🛠️ USER SETTINGS (CHANGE THESE)
         // ==========================================
-        const GENDER = 'boy'; // 'boy' or 'girl'
-        const PHOTO_NAME = 'us_resized.jpg'; 
-        const PASS_CODE = 'baby'; // YOUR PASSWORD
+        const GENDER = 'boy'; 
+        const PHOTO_NAME = 'us.jpg'; 
+        const PASS_CODE = 'baby'; 
         const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSfOCksWrckDJk0_7x3QHFA-9kEtJvxXz90AR1rRVamCcTgWxw/viewform?embedded=true';
         // ==========================================
-
-        // PASSWORD PROTECTION LOGIC
-        function checkPassword() {
-            let attempt = prompt("Please enter the secret code to enter:");
-            if (attempt === null) {
-                // User clicked cancel
-                document.body.innerHTML = "<h1 style='margin-top:100px; font-family:sans-serif; color:#777;'>Access Denied. Refresh to try again.</h1>";
-                window.stop();
-            } else if (attempt.toLowerCase() !== PASS_CODE.toLowerCase()) {
-                alert("Incorrect code! Try again.");
-                checkPassword(); // Loop until they get it or cancel
-            } else {
-                // Correct password! Show the site
-                document.getElementById('main-wrapper').style.display = 'block';
-            }
-        }
     </script>
 
     <meta charset="UTF-8">
@@ -34,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
-        /* CSS STYLES */
         body {
             margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; background-color: #f3eafc; 
@@ -42,16 +25,38 @@
             text-align: center; overflow-x: hidden; transition: background-color 1.2s ease; box-sizing: border-box;
         }
 
-        /* Hides everything until password is correct */
-        #main-wrapper { display: none; width: 100%; }
+        .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
 
-        .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; margin: 0 auto; }
+        /* PASSWORD GUI STYLES */
+        #password-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 80vh; width: 100%;
+        }
+        .password-card {
+            background: white; padding: 40px 30px; border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 90%; max-width: 350px;
+        }
+        .password-card h2 { color: #5a4fcf; margin-bottom: 20px; font-size: 1.4rem; }
+        .password-card input {
+            width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #cbc3e3;
+            font-size: 1rem; text-align: center; outline: none; box-sizing: border-box; margin-bottom: 20px;
+        }
+        .password-card button {
+            background: #5a4fcf; color: white; border: none; padding: 15px 40px;
+            border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 1rem;
+            transition: transform 0.2s, background 0.2s; width: 100%;
+        }
+        .password-card button:hover { background: #4a3ebf; transform: scale(1.02); }
+        #error-msg { color: #e91e63; font-size: 0.9rem; margin-top: 10px; display: none; }
+
+        /* THE GAME CONTENT (Hidden until password is correct) */
+        #game-content { display: none; width: 100%; }
+
         #parents-photo { margin-top: 50px; margin-bottom: 20px; }
         .couple-img { width: 220px; height: 220px; border-radius: 50%; border: 6px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.1); object-fit: cover; }
         .couple-label { margin-top: 10px; font-weight: 700; color: #7d7098; letter-spacing: 1px; font-size: 0.85rem; text-transform: uppercase; }
         h1 { color: #5a4fcf; margin: 20px 0; font-size: 1.6rem; }
         
-        /* The Reveal Card */
         .reveal-card { width: 280px; height: 350px; background: white; border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 4px dashed #cbc3e3; -webkit-tap-highlight-color: transparent; margin: 0 auto; }
         
         .shake { animation: hard-shake 1.5s cubic-bezier(.36,.07,.19,.97) both; }
@@ -64,13 +69,11 @@
             95% { transform: translate3d(-14px, 0, 0) rotate(-5deg); }
         }
 
-        /* Result Badge */
         #reveal-section { display: none; width: 100%; }
         .result-badge { background: white; border: 6px solid #abd6e2; border-radius: 40px; padding: 60px 100px; display: inline-block; margin: 60px 0 120px 0; box-shadow: 0 12px 0px #abd6e2; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-width: 90%; }
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .gender-result { font-size: 3rem; font-weight: 900; color: #3498db; margin: 0; text-shadow: 1px 1px 0px #fff; white-space: nowrap; }
 
-        /* Invitation Box */
         .invite-box { background: white; padding: 45px 20px; border-radius: 28px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); margin-bottom: 50px; width: 100%; box-sizing: border-box; }
         .invite-box h2 { font-size: 1.8rem; margin-bottom: 10px; color: #333; line-height: 1.3; }
         .event-details { font-size: 1.1rem; color: #666; margin-bottom: 25px; font-weight: 500; }
@@ -85,17 +88,26 @@
         }
     </style>
 </head>
-<body onload="checkPassword()">
+<body>
 
-    <div id="main-wrapper">
+    <!-- PASSWORD SCREEN -->
+    <div id="password-screen">
+        <div class="password-card">
+            <h2>Welcome! 🐣</h2>
+            <input type="text" id="passInput" placeholder="Enter the secret code..." autocomplete="off">
+            <button onclick="checkPass()">Go!</button>
+            <div id="error-msg">Incorrect code. Try again!</div>
+        </div>
+    </div>
+
+    <!-- MAIN GAME CONTENT -->
+    <div id="game-content">
         <div class="container">
-            <!-- Photo Section -->
             <div id="parents-photo">
                 <img id="main-photo" src="" alt="The Parents" class="couple-img">
                 <div class="couple-label">The Parents-to-be</div>
             </div>
 
-            <!-- Pre-Reveal -->
             <div id="setup-section">
                 <h1>Is it a Boy or a Girl?</h1>
                 <div id="card" class="reveal-card" onclick="triggerReveal()">
@@ -104,7 +116,6 @@
                 </div>
             </div>
 
-            <!-- Post-Reveal -->
             <div id="reveal-section">
                 <div class="result-badge">
                     <h2 class="gender-result">It's a BOY! 💙</h2>
@@ -121,9 +132,30 @@
     </div>
 
     <script>
-        // Apply Settings
+        // Setup content
         document.getElementById('main-photo').src = 'images/' + PHOTO_NAME;
         document.getElementById('rsvp-form').src = GOOGLE_FORM_URL;
+
+        // Custom GUI Password Check
+        function checkPass() {
+            const input = document.getElementById('passInput').value.toLowerCase();
+            const error = document.getElementById('error-msg');
+            
+            if (input === PASS_CODE.toLowerCase()) {
+                document.getElementById('password-screen').style.display = 'none';
+                document.getElementById('game-content').style.display = 'block';
+            } else {
+                error.style.display = 'block';
+                document.getElementById('passInput').value = '';
+            }
+        }
+
+        // Allow pressing "Enter" key for password
+        document.getElementById('passInput').addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPass();
+            }
+        });
 
         function triggerReveal() {
             const card = document.getElementById('card');
