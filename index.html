@@ -3,12 +3,19 @@
 <head>
     <script>
         // ==========================================
-        // 🛠️ USER SETTINGS (CHANGE THESE)
+        // 🛠️ USER SETTINGS
         // ==========================================
         const GENDER = 'boy'; 
         const PHOTO_NAME = 'us.jpg'; 
         const PASS_CODE = 'baby'; 
+        
+        const DRUMROLL_FILE = 'audio/drum_roll.mp3';
+        const CONGRATS_FILE = 'audio/kids_yay.mp3';
         // ==========================================
+
+        const drumroll = new Audio(DRUMROLL_FILE);
+        const congrats = new Audio(CONGRATS_FILE);
+        drumroll.loop = true; 
     </script>
 
     <meta charset="UTF-8">
@@ -17,115 +24,109 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
+        * { box-sizing: border-box; }
+        
         body {
-            margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center;
-            min-height: 100vh; background-color: #f3eafc; 
+            margin: 0; padding: 0; 
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; width: 100vw;
+            background-color: white; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            text-align: center; overflow-x: hidden; transition: background-color 1.2s ease; box-sizing: border-box;
+            text-align: center; overflow-x: hidden; transition: background-color 1.2s ease;
         }
 
-        .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-
-        /* PASSWORD SCREEN */
-        #password-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; width: 100%;
-        }
-        .password-card {
-            background: white; padding: 40px 30px; border-radius: 35px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 85%; max-width: 320px;
-        }
-        .password-card h2 { color: #5a4fcf; margin-bottom: 20px; font-size: 1.4rem; }
-        .password-card input {
-            width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #cbc3e3;
-            font-size: 16px; /* 16px prevents iOS auto-zoom on focus */
-            text-align: center; outline: none; box-sizing: border-box; margin-bottom: 20px;
-        }
-        .password-card button {
-            background: #5a4fcf; color: white; border: none; padding: 15px 40px;
-            border-radius: 15px; font-weight: bold; cursor: pointer; font-size: 1rem; width: 100%;
+        /* Center everything in the container */
+        .container { 
+            width: 100%; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
         }
 
-        /* CONTENT WRAPPER */
+        #password-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100vw; }
+        .password-card { background: white; padding: 45px 30px; border-radius: 35px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 90%; max-width: 340px; display: flex; flex-direction: column; align-items: center; }
+        .password-card h2 { color: #5a4fcf; margin: 0 0 25px 0; font-size: 1.6rem; }
+        .password-card input { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #cbc3e3; font-size: 16px; text-align: center; margin-bottom: 20px; outline: none; }
+        .password-card button { width: 100%; background: #5a4fcf; color: white; border: none; padding: 16px; border-radius: 15px; font-weight: bold; cursor: pointer; }
+
         #game-content { display: none; width: 100%; }
 
-        #parents-photo { margin-top: 40px; }
-        .couple-img { width: 200px; height: 200px; border-radius: 50%; border: 6px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.1); object-fit: cover; }
-        .couple-label { margin-top: 10px; font-weight: 700; color: #7d7098; letter-spacing: 1px; font-size: 0.8rem; text-transform: uppercase; }
-        h1 { color: #5a4fcf; margin: 30px 0; font-size: 1.5rem; padding: 0 10px; }
+        /* Parents Photo Centering */
+        #parents-photo { 
+            margin-top: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+        .couple-img { width: 200px; height: 200px; border-radius: 50%; border: 6px solid white; box-shadow: 0 8px 20px rgba(0,0,0,0.1); object-fit: cover; display: block; }
+        .couple-label { margin-top: 15px; font-weight: 700; color: #7d7098; letter-spacing: 1px; font-size: 1.1rem; text-transform: uppercase; }
         
+        h1 { color: #555; margin: 40px 0 30px 0; font-size: 2.2rem; font-weight: 800; }
+        .boy-span { color: #3498db; }
+        .girl-span { color: #e91e63; }
+
+        /* REVEAL STAGE: This ensures the card is dead center and bears are on the side */
+        .reveal-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 20px; /* Distance between bears and box */
+            margin-bottom: 50px;
+        }
+
+        .teddy { 
+            font-size: 5rem; /* Large size */
+            pointer-events: none; 
+            animation: float 3s ease-in-out infinite; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .blue-balloon { filter: hue-rotate(190deg) brightness(1.2); }
+        .pink-balloon { filter: hue-rotate(310deg) brightness(1.2); }
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-15px) rotate(3deg); } }
+
+        /* REVEAL CARD */
         .reveal-card { 
-            width: 260px; height: 320px; background: white; border-radius: 24px; 
+            width: 280px; height: 500px; background: white; border-radius: 35px; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.1); display: flex; flex-direction: column; 
             align-items: center; justify-content: center; cursor: pointer; 
-            border: 4px dashed #cbc3e3; margin: 0 auto; -webkit-tap-highlight-color: transparent;
+            border: 8px dashed #5a4fcf; /* Thicker edge */
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0; /* Prevents the box from squishing */
         }
         
-        /* SHAKE ANIMATION */
-        .shake { animation: hard-shake 1.5s cubic-bezier(.36,.07,.19,.97) both; }
+        .shake { animation: hard-shake 3s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes hard-shake {
-            10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-1deg); }
-            20%, 80% { transform: translate3d(4px, 0, 0) rotate(2deg); }
-            30%, 50%, 70% { transform: translate3d(-8px, 0, 0) rotate(-3deg); }
-            40%, 60% { transform: translate3d(8px, 0, 0) rotate(3deg); }
-            95% { transform: translate3d(-10px, 0, 0) rotate(-4deg); }
+            2%, 98% { transform: translate3d(-3px, 0, 0) rotate(-1deg); }
+            5%, 95% { transform: translate3d(5px, 0, 0) rotate(2deg); }
+            10%, 30%, 50%, 70%, 90% { transform: translate3d(-10px, 0, 0) rotate(-4deg); }
+            20%, 40%, 60%, 80% { transform: translate3d(10px, 0, 0) rotate(4deg); }
         }
 
-        /* MOBILE-PERFECT FANCY BADGE */
-        #reveal-section { 
-            display: none; width: 100%; 
-            height: 70vh; /* Centers the badge vertically in the screen */
-            flex-direction: column; align-items: center; justify-content: center;
-        }
-        
-        .result-badge {
-            background: white;
-            position: relative;
-            border: 8px solid #abd6e2; 
-            border-radius: 40px; 
-            /* Responsive Padding: Uses % and Viewport width */
-            padding: 12% 15%; 
-            display: inline-block;
-            box-shadow: 0 15px 0px #abd6e2, 0 30px 50px rgba(0,0,0,0.1);
-            max-width: 85vw; /* Never wider than the phone screen */
-            animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, 
-                       floating 3s ease-in-out infinite 0.8s;
-        }
+        .tap-text { font-weight: bold; color: #7d7098; letter-spacing: 2px; font-size: 1.1rem; margin-top: 25px; }
+        .card-drums { font-size: 3rem; margin-top: 20px; display: flex; gap: 10px; }
 
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        #reveal-section { display: none; width: 100%; height: 75vh; flex-direction: column; align-items: center; justify-content: center; }
+        .result-badge { 
+            background: white; border: 8px solid #abd6e2; border-radius: 45px; 
+            padding: 60px 100px; display: inline-block; box-shadow: 0 15px 0px #abd6e2, 0 30px 50px rgba(0,0,0,0.1); 
+            max-width: 90vw; animation: popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floating 3.2s ease-in-out infinite 0.8s; 
         }
-
-        @keyframes floating {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-15px) rotate(1deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        .gender-result { 
-            /* Fluid Font Size: Scales between 2rem and 3.5rem based on screen width */
-            font-size: clamp(2rem, 10vw, 3.5rem);
-            font-weight: 900; 
-            color: #3498db; 
-            margin: 0;
-            text-shadow: 2px 2px 0px #fff;
-            white-space: nowrap; /* Keeps "It's a BOY!" on one line */
-        }
-
-        /* Sparkles */
-        .result-badge::before, .result-badge::after {
-            content: "✨"; position: absolute; font-size: clamp(1.5rem, 5vw, 2.5rem);
-            animation: twinkle 1.5s infinite alternate;
-        }
-        .result-badge::before { top: -15px; left: -15px; }
-        .result-badge::after { bottom: -15px; right: -15px; }
-
-        @keyframes twinkle { from { opacity: 0.3; transform: scale(0.8); } to { opacity: 1; transform: scale(1.2); } }
-
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .gender-result { font-size: clamp(2.2rem, 10vw, 3.8rem); font-weight: 900; color: #3498db; margin: 0; text-shadow: 2px 2px 0px #fff; white-space: nowrap; }
         .bg-boy { background-color: #eef7ff !important; }
 
-        #error-msg { color: #e91e63; font-size: 0.85rem; margin-top: 10px; display: none; }
+        /* Mobile Fix: Stack bears or hide them if screen is too small */
+        @media (max-width: 600px) {
+            .reveal-stage { gap: 5px; }
+            .teddy { font-size: 3.5rem; }
+            h1 { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -133,27 +134,40 @@
     <div id="password-screen">
         <div class="password-card">
             <h2>Welcome! 🐣</h2>
-            <input type="text" id="passInput" placeholder="Enter secret code..." autocomplete="off" autofocus>
+            <input type="text" id="passInput" placeholder="Enter secret code..." autocomplete="off">
             <button onclick="checkPass()">Unlock Reveal</button>
-            <div id="error-msg">Incorrect code. Try again!</div>
         </div>
     </div>
 
     <div id="game-content">
         <div class="container">
+            
+            <!-- Photo & Label -->
             <div id="parents-photo">
-                <img id="main-photo" src="" alt="The Parents" class="couple-img">
+                <img id="main-photo" src="" alt="Parents" class="couple-img">
                 <div class="couple-label">The Parents-to-be</div>
             </div>
 
-            <div id="setup-section">
-                <h1>Is it a Boy or a Girl?</h1>
+            <!-- Header -->
+            <h1>Is it a <span class="boy-span">Boy</span> or a <span class="girl-span">Girl</span>?</h1>
+
+            <!-- REVEAL STAGE (Teddies + Box) -->
+            <div class="reveal-stage" id="setup-section">
+                <!-- Left Teddy (Blue) -->
+                <div class="teddy teddy-left">🧸<span class="blue-balloon">🎈</span></div>
+
+                <!-- Reveal Card -->
                 <div id="card" class="reveal-card" onclick="triggerReveal()">
-                    <div style="font-size:70px;">❓</div>
-                    <div style="font-weight:bold; color:#7d7098; margin-top:10px; letter-spacing: 1px;">TAP TO REVEAL</div>
+                    <div style="font-size:110px;">❓</div>
+                    <div class="tap-text">TAP TO REVEAL</div>
+                    <div class="card-drums">🥁 🥁 🥁</div>
                 </div>
+
+                <!-- Right Teddy (Pink) -->
+                <div class="teddy teddy-right">🧸<span class="pink-balloon">🎈</span></div>
             </div>
 
+            <!-- Result Section -->
             <div id="reveal-section">
                 <div class="result-badge">
                     <h2 class="gender-result">It's a BOY! 💙</h2>
@@ -167,12 +181,13 @@
 
         function checkPass() {
             const input = document.getElementById('passInput').value.toLowerCase();
-            const error = document.getElementById('error-msg');
             if (input === PASS_CODE.toLowerCase()) {
+                drumroll.play().then(() => { drumroll.pause(); }).catch(e => {});
+                congrats.play().then(() => { congrats.pause(); }).catch(e => {});
                 document.getElementById('password-screen').style.display = 'none';
                 document.getElementById('game-content').style.display = 'block';
             } else {
-                error.style.display = 'block';
+                alert("Incorrect code. Try again!");
                 document.getElementById('passInput').value = '';
             }
         }
@@ -181,25 +196,36 @@
 
         function triggerReveal() {
             const card = document.getElementById('card');
+            const setup = document.getElementById('setup-section');
+            
+            try { drumroll.play(); } catch(e) {}
+            
             card.classList.add('shake');
+
             setTimeout(() => {
-                document.getElementById('setup-section').style.display = 'none';
+                try {
+                    drumroll.pause();
+                    drumroll.currentTime = 0; 
+                    congrats.play();
+                } catch(e) {}
+
+                setup.style.display = 'none';
                 document.getElementById('parents-photo').style.display = 'none';
+                
                 document.body.classList.add('bg-boy');
                 const revealSect = document.getElementById('reveal-section');
-                revealSect.style.display = 'flex'; // Use flex to center the badge
+                revealSect.style.display = 'flex';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 runConfetti('#3498db', '#87ceeb');
-            }, 1500); 
+            }, 3000); 
         }
 
         function runConfetti(color1, color2) {
-            const defaults = { startVelocity: 45, spread: 80, ticks: 60, zIndex: 0 };
-            confetti({...defaults, origin: { x: 0, y: 0.8 }, colors: [color1, color2], particleCount: 150 });
-            confetti({...defaults, origin: { x: 1, y: 0.8 }, colors: [color1, color2], particleCount: 150 });
+            confetti({ origin: { x: 0, y: 0.8 }, colors: [color1, color2], particleCount: 150 });
+            confetti({ origin: { x: 1, y: 0.8 }, colors: [color1, color2], particleCount: 150 });
             let count = 0;
             const fireworkInterval = setInterval(() => {
-                confetti({ particleCount: 50, startVelocity: 35, spread: 360, origin: { x: Math.random(), y: Math.random() - 0.2 }, colors: [color1, color2, '#fff'], shapes: ['star'] });
+                confetti({ particleCount: 60, spread: 360, origin: { x: Math.random(), y: Math.random() - 0.2 }, colors: [color1, color2, '#fff'], shapes: ['star'] });
                 count++;
                 if (count > 15) clearInterval(fireworkInterval);
             }, 200);
